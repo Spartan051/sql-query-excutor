@@ -3,6 +3,8 @@ import AddConnection from "../popup/addConnection";
 import EditConnection from "../popup/editConnection";
 import NotFound from "../template/notFound";
 import Loading from "../template/loading";
+import ReactPaginate from "react-paginate";
+import "./conecction.css";
 import {
   getAllConnections,
   createNewConnection,
@@ -13,18 +15,18 @@ import {
 // import axios from "axios";
 
 const Connections = () => {
-  let [connections, setConnections] = useState([]);
+  const [connections, setConnections] = useState([]);
   const [addpop, setAddpop] = useState(false);
   const [editpop, setEditpop] = useState(false);
   const [showLoading, setLoading] = useState(true);
   const [pervConnection, setPervConnection] = useState({});
-
-  // useEffect(() => {
-  //   setTimeout(() => {
-  //     getConnections();
-  //   }, 1000);
-  // }, []);
-
+  const [pageNumber, setPageNumber] = useState(0);
+  const connectionPerPage = 6;
+  const pagesVisited = pageNumber * connectionPerPage;
+  const pageCount = Math.ceil(connections.length / connectionPerPage);
+  const changePage = ({ selected }) => {
+    setPageNumber(selected);
+  };
   useEffect(() => {
     fetchConnections();
   }, []);
@@ -40,32 +42,6 @@ const Connections = () => {
       console.log(error);
     }
   };
-
-  // useEffect(() => {
-  //   const fetchData = async () => {
-  //     try {
-  //       const res = await axios.get("http://172.16.1.63:8080/api/connections");
-  //       console.log(res.data.data);
-  //       connections = res.data.data;
-  //       setConnections(res.data.data);
-  //       console.log(connections);
-  //     } catch (err) {
-  //       console.log(err);
-  //     }
-  //   };
-  // getConnections();
-  // fetchData();
-  // console.log(connections);
-  // const mamad = await axios
-  //   .get("http://172.16.1.63:8080/api/connections")
-  //   .then((res) => {
-  //     console.log(res.data.data);
-  //     setConnections(res.data.data);
-  //   })
-  //   .catch((err) => {
-  //     console.log(err);
-  //   });
-  // }, []);
 
   async function getConnections() {
     try {
@@ -88,6 +64,8 @@ const Connections = () => {
       const response = await createNewConnection(value);
       if (response.data.message === "connection is created") {
         setAddpop(false);
+        getConnections();
+
         console.log(response.data.message);
       } else {
         console.log(`error : ${response.data.message}`);
@@ -149,7 +127,6 @@ const Connections = () => {
 
   function handleAddConnection(value) {
     newConnection(value);
-    getConnections();
   }
 
   function handleEditpop() {
@@ -205,52 +182,88 @@ const Connections = () => {
 
         {showLoading === true && <Loading />}
 
-        <div className="flex justify-around flex-wrap mx-auto w-[80%]">
+        <div className="flex justify-around mb-8 flex-wrap mx-auto w-[80%]">
           {showLoading === false &&
-            connections.map((item, index) => {
-              return (
-                <div
-                  className="w-[26%] bg-gray-500 h-64 mt-20 rounded-lg"
-                  key={index}
-                >
-                  <ul className="ml-4">
-                    <li className=" mt-6">
-                      connection_name :{" "}
-                      <span className="text-red-800">
-                        {item.connection_name}
-                      </span>
-                    </li>
-                    <li className=" mt-6">
-                      host : <span className="text-red-800">{item.host}</span>
-                    </li>
-                    <li className=" mt-6">
-                      database_name :{" "}
-                      <span className="text-red-800">{item.database_name}</span>
-                    </li>
-                    <li className=" mt-6">
-                      username :{" "}
-                      <span className="text-red-800">{item.username}</span>
-                    </li>
-                  </ul>
-                  <div className="flex justify-between mx-20 mt-6">
-                    <button
-                      id={item.connection_id}
-                      className="bg-blue-500 py-1 px-3 rounded-md"
-                      onClick={onEdit}
-                    >
-                      edit
-                    </button>
-                    <button
-                      id={item.connection_id}
-                      className="bg-red-500 py-1 px-3 rounded-md"
-                      onClick={onDelete}
-                    >
-                      delete
-                    </button>
+            connections
+              .slice(pagesVisited, pagesVisited + connectionPerPage)
+              .map((item, index) => {
+                return (
+                  <div
+                    className="w-[26%] bg-[#f3f1f1] shadow-xl h-64 mt-20 rounded-lg"
+                    key={index}
+                  >
+                    <ul className="ml-4">
+                      <li className="mt-6 border-b-2  border-gray-200 border-solid w-[80%] text-[#112A46]">
+                        Connection Name :
+                        <span className="text-[#323436] font-semibold ml-1 ">
+                          {item.connection_name}
+                        </span>
+                      </li>
+                      <li className=" mt-4 border-b-2 border-gray-200 border-solid w-[80%] text-[#112A46]">
+                        Host :
+                        <span className="text-[#323436] font-semibold  ml-1">
+                          {item.host}
+                        </span>
+                      </li>
+                      <li className=" mt-4 border-b-2 border-gray-200 border-solid w-[80%] text-[#112A46]">
+                        Database Name :
+                        <span className="text-[#323436] font-semibold  ml-1">
+                          {item.database_name}
+                        </span>
+                      </li>
+                      <li className=" mb-4 mt-4 border-b-2 border-gray-200 border-solid w-[80%] text-[#112A46]">
+                        Username :
+                        <span className="text-[#323436] font-semibold  ml-1">
+                          {item.username}
+                        </span>
+                      </li>
+                    </ul>
+
+                    <div className="flex justify-between mx-2 mt-2">
+                      <div className="w-full mr-2">
+                        <span className="block w-full rounded-md shadow-sm">
+                          <button
+                            id={item.id}
+                            onClick={onEdit}
+                            type="button"
+                            className="py-2 px-4  bg-indigo-600 hover:bg-indigo-700 focus:ring-indigo-500 focus:ring-offset-indigo-200 text-white w-full transition ease-in duration-200 text-center text-base font-semibold shadow-md focus:outline-none focus:ring-2 focus:ring-offset-2  rounded-lg "
+                          >
+                            Edit
+                          </button>
+                        </span>
+                      </div>{" "}
+                      <div className="w-full">
+                        <span className="block w-full rounded-md shadow-sm">
+                          <button
+                            id={item.id}
+                            onClick={onDelete}
+                            type="button"
+                            className="text-white bg-gradient-to-r w-full from-red-400 via-red-500 to-red-600 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-red-300 dark:focus:ring-red-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center mr-2 mb-2"
+                          >
+                            Delete
+                          </button>
+                        </span>
+                      </div>
+                    </div>
                   </div>
-                </div>
-              );
-            })}
+                );
+              })}
+        </div>
+        <div id="page" className="flex items-center ">
+          <ReactPaginate
+            previousLabel={"<"}
+            nextLabel={">"}
+            pageRangeDisplayed={1}
+            marginPagesDisplayed={1}
+            breakLabel="..."
+            pageCount={pageCount}
+            onPageChange={changePage}
+            containerClassName={"paginationBttns"}
+            previousLinkClassName={"previousBttn"}
+            nextLinkClassName={"nextBttn"}
+            disabledClassName={"paginationDisabled"}
+            activeClassName={"paginationActive"}
+          />
         </div>
       </div>{" "}
     </>

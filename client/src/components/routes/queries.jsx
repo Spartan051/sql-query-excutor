@@ -3,6 +3,9 @@ import AddQuery from "../popup/addQuery";
 import EditQuery from "../popup/editQuery";
 import Loading from "../template/loading";
 import NotFound from "../template/notFound";
+import ReactPaginate from "react-paginate";
+import "./conecction.css";
+
 import {
   getAllQueries,
   createNewQuery,
@@ -17,7 +20,13 @@ const Queries = () => {
   const [queries, setQueries] = useState([]);
   const [loading, setLoading] = useState(true);
   const [pervQuery, setPervQuery] = useState({});
-
+  const [pageNumber, setPageNumber] = useState(0);
+  const connectionPerPage = 6;
+  const pagesVisited = pageNumber * connectionPerPage;
+  const pageCount = Math.ceil(queries.length / connectionPerPage);
+  const changePage = ({ selected }) => {
+    setPageNumber(selected);
+  };
   useEffect(() => {
     setTimeout(() => {
       getQueries();
@@ -60,6 +69,7 @@ const Queries = () => {
       if (response.data.message === "query is created") {
         setAddpop(false);
         console.log(response.data.message);
+        getQueries();
       } else {
         console.log(`error : ${response.data.message}`);
       }
@@ -103,7 +113,6 @@ const Queries = () => {
 
   function handleAddQuery(value) {
     newQuery(value);
-    getQueries();
   }
 
   function handleEditpop() {
@@ -151,57 +160,95 @@ const Queries = () => {
           </div>
         </div>
         <hr className="border-gray-500 w-[80%] mx-auto border my-0.5" />
-
         {queries.length === 0 && loading === false && <NotFound />}
-
         {loading === true && <Loading />}
-
         <div className="flex justify-around flex-wrap mx-auto w-[80%]">
           {loading === false &&
-            queries.map((item, index) => (
-              <div
-                className="w-[26%] bg-gray-500 h-72 mt-16 rounded-lg"
-                key={index}
-              >
-                <ul className="ml-4">
-                  <li className=" mt-5">
-                    connection name :{" "}
-                    <span className="text-red-800">{item.connection_name}</span>
-                  </li>
-                  <li className=" mt-5">
-                    query name :{" "}
-                    <span className="text-red-800">{item.query_name}</span>
-                  </li>
-                  <li className=" mt-5">
-                    query : <span className="text-red-800">{item.query}</span>
-                  </li>
-                  <li className=" mt-5">
-                    fields : <span className="text-red-800">{item.fields}</span>
-                  </li>
-                  <li className=" mt-5">
-                    show type :{" "}
-                    <span className="text-red-800">{item.show_type}</span>
-                  </li>
-                </ul>
-                <div className="flex justify-between mx-20 mt-6">
-                  <button
-                    className="bg-blue-500 py-1 px-3 rounded-md"
-                    id={item.query_id}
-                    onClick={onEdit}
-                  >
-                    edit
-                  </button>
-                  <button
-                    className="bg-red-500 py-1 px-3 rounded-md"
-                    id={item.query_id}
-                    onClick={onDelete}
-                  >
-                    delete
-                  </button>
+            queries
+              .slice(pagesVisited, pagesVisited + connectionPerPage)
+              .map((item, index) => (
+                <div
+                  className="w-[26%] bg-[#f3f1f1] shadow-xl  mt-20 rounded-lg"
+                  key={index}
+                >
+                  <ul className="ml-4">
+                    <li className="mt-6 border-b-2  border-gray-200 border-solid w-[80%] text-[#112A46]">
+                      Connection Name :
+                      <span className="text-[#323436] font-semibold ml-1 ">
+                        {item.connection_name}
+                      </span>
+                    </li>
+                    <li className=" mt-4 border-b-2 border-gray-200 border-solid w-[80%] text-[#112A46]">
+                      Query Name :
+                      <span className="text-[#323436] font-semibold  ml-1">
+                        {item.query_name}
+                      </span>
+                    </li>
+                    <li className=" mt-4 border-b-2 border-gray-200 border-solid w-[80%] text-[#112A46]">
+                      Query :
+                      <span className="text-[#323436] font-semibold  ml-1">
+                        {item.query}
+                      </span>
+                    </li>
+                    <li className=" mb-4 mt-4 border-b-2 border-gray-200 border-solid w-[80%] text-[#112A46]">
+                      Fields :
+                      <span className="text-[#323436] font-semibold  ml-1">
+                        {item.fileds}
+                      </span>
+                    </li>
+                    <li className=" mb-4 mt-4 border-b-2 border-gray-200 border-solid w-[80%] text-[#112A46]">
+                      Show Type :
+                      <span className="text-[#323436] font-semibold  ml-1">
+                        {item.show_type}
+                      </span>
+                    </li>
+                  </ul>
+
+                  <div className="flex justify-between pb-4 mx-2 mt-2">
+                    <div className="w-full mr-2">
+                      <span className="block w-full rounded-md shadow-sm">
+                        <button
+                          id={item.id}
+                          onClick={onEdit}
+                          type="button"
+                          className="py-2 px-4  bg-indigo-600 hover:bg-indigo-700 focus:ring-indigo-500 focus:ring-offset-indigo-200 text-white w-full transition ease-in duration-200 text-center text-base font-semibold shadow-md focus:outline-none focus:ring-2 focus:ring-offset-2  rounded-lg "
+                        >
+                          Edit
+                        </button>
+                      </span>
+                    </div>{" "}
+                    <div className="w-full">
+                      <span className="block w-full rounded-md shadow-sm">
+                        <button
+                          id={item.id}
+                          onClick={onDelete}
+                          type="button"
+                          className="text-white bg-gradient-to-r w-full from-red-400 via-red-500 to-red-600 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-red-300 dark:focus:ring-red-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center mr-2 mb-2"
+                        >
+                          Delete
+                        </button>
+                      </span>
+                    </div>
+                  </div>
                 </div>
-              </div>
-            ))}
+              ))}
         </div>
+        <div id="page" className="flex items-center ">
+          <ReactPaginate
+            previousLabel={"<"}
+            nextLabel={">"}
+            pageRangeDisplayed={1}
+            marginPagesDisplayed={1}
+            breakLabel="..."
+            pageCount={pageCount}
+            onPageChange={changePage}
+            containerClassName={"paginationBttns"}
+            previousLinkClassName={"previousBttn"}
+            nextLinkClassName={"nextBttn"}
+            disabledClassName={"paginationDisabled"}
+            activeClassName={"paginationActive"}
+          />
+        </div>{" "}
       </div>
     </>
   );
