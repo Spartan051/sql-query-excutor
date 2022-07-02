@@ -10,23 +10,67 @@ import {
   getOneConnection,
   updateOneConnection,
 } from "../services/connectionsApi";
+// import axios from "axios";
 
 const Connections = () => {
-  const [connections, setConnections] = useState([]);
+  let [connections, setConnections] = useState([]);
   const [addpop, setAddpop] = useState(false);
   const [editpop, setEditpop] = useState(false);
   const [showLoading, setLoading] = useState(true);
   const [pervConnection, setPervConnection] = useState({});
 
+  // useEffect(() => {
+  //   setTimeout(() => {
+  //     getConnections();
+  //   }, 1000);
+  // }, []);
+
   useEffect(() => {
-    setTimeout(() => {
-      getConnections();
-    }, 1000);
+    fetchConnections();
   }, []);
+
+  const fetchConnections = async () => {
+    try {
+      const response = await getAllConnections();
+      console.log(response.data.data);
+      setConnections(response.data.data);
+      setLoading(false);
+      console.log(connections);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  // useEffect(() => {
+  //   const fetchData = async () => {
+  //     try {
+  //       const res = await axios.get("http://172.16.1.63:8080/api/connections");
+  //       console.log(res.data.data);
+  //       connections = res.data.data;
+  //       setConnections(res.data.data);
+  //       console.log(connections);
+  //     } catch (err) {
+  //       console.log(err);
+  //     }
+  //   };
+  // getConnections();
+  // fetchData();
+  // console.log(connections);
+  // const mamad = await axios
+  //   .get("http://172.16.1.63:8080/api/connections")
+  //   .then((res) => {
+  //     console.log(res.data.data);
+  //     setConnections(res.data.data);
+  //   })
+  //   .catch((err) => {
+  //     console.log(err);
+  //   });
+  // }, []);
 
   async function getConnections() {
     try {
       let response = await getAllConnections();
+      console.log(response);
       if (response.data.message === "connections has been send") {
         setConnections(response.data.data);
         setLoading(false);
@@ -59,7 +103,9 @@ const Connections = () => {
       if (response.data.message === "connection has been send") {
         setPervConnection(response.data.data);
         setEditpop(true);
-        console.log(`connection ${pervConnection[0].connection_name} is received`);
+        console.log(
+          `connection ${pervConnection[0].connection_name} is received`
+        );
       } else {
         console.log(`error : ${response.data.message}`);
       }
@@ -138,21 +184,22 @@ const Connections = () => {
           pervConnection={pervConnection}
         />
       )}
-
-      <div className="w-[90%] ml-[10%]">
-        <h1 className="text-center mt-14 text-5xl font-bold">Connections</h1>
-        <button
-          className="block ml-[93%] text-white bg-blue-700 font-medium rounded-lg text-sm px-5 py-2.5 text-center
-          hover:bg-blue-800 
-          focus:ring-4 focus:outline-none focus:ring-blue-300
-          dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
-          type="button"
-          data-modal-toggle="defaultModal"
-          onClick={() => setAddpop(true)}
-        >
-          new
-        </button>
-        <hr className="border-black w-[80%] mx-auto border-2 mt-4" />
+      <div className="w-full">
+        <div className="flex justify-between items-center mt-6 mb-2">
+          <h1 className="text-center ml-20 text-[#112A46] text-3xl font-bold">
+            Connections
+          </h1>
+          <div>
+            <button
+              onClick={() => setAddpop(true)}
+              type="button"
+              class="text-white mr-20 bg-gradient-to-r from-blue-500 via-blue-600 to-blue-700 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center  mb-2"
+            >
+              New Connection
+            </button>
+          </div>
+        </div>
+        <hr className="border-gray-500 w-[80%] mx-auto border my-0.5" />
 
         {connections.length === 0 && showLoading === false && <NotFound />}
 
@@ -205,7 +252,7 @@ const Connections = () => {
               );
             })}
         </div>
-      </div>
+      </div>{" "}
     </>
   );
 };
