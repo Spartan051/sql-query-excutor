@@ -1,15 +1,30 @@
+import { useEffect } from "react";
 import { useRef, useState } from "react";
-
+import { getAllConnections } from "../services/connectionsApi";
 const AddQuery = ({ handleAddpop, handleAddQuery }) => {
   const [result, setResult] = useState();
-
+  const [connections, setConnections] = useState([]);
   const queryName = useRef(null);
   const query = useRef(null);
   const connectionName = useRef(null);
   const fields = useRef(null);
 
+  useEffect(() => {
+    fetchConnections();
+  }, []);
+
+  const fetchConnections = async () => {
+    try {
+      const response = await getAllConnections();
+      setConnections(response.data.data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   function setData() {
     const data = {
+      user_id: 2,
       connection_name: connectionName.current.value,
       query_name: queryName.current.value,
       query: query.current.value,
@@ -63,14 +78,20 @@ const AddQuery = ({ handleAddpop, handleAddQuery }) => {
             <div className="mt-6">
               <div className="w-full space-y-6">
                 <div className="w-full">
-                  <div className=" relative ">
-                    <input
-                      type="text"
-                      id="name"
+                  <div className="  ">
+                    <select
                       className=" rounded-lg border-transparent flex-1 appearance-none border border-gray-300 w-full py-2 px-4 bg-white text-gray-700 placeholder-gray-400 shadow-sm text-base focus:outline-none focus:ring-2 focus:ring-purple-600 focus:border-transparent"
-                      placeholder="Connection Name"
+                      name="cars"
+                      id="cars"
                       ref={connectionName}
-                    />
+                    >
+                      <option selected disabled hidden>
+                        Select an Connection
+                      </option>{" "}
+                      {connections.map((item, index) => (
+                        <option>{item.connection_name}</option>
+                      ))}
+                    </select>
                   </div>
                 </div>
                 <div className="w-full">

@@ -9,6 +9,7 @@ const AddConnection = ({ handleAddpop, handleAddConnection }) => {
 
   function setData() {
     const data = {
+      user_id: 2,
       connection_name: name.current.value,
       host: host.current.value,
       database_name: database.current.value,
