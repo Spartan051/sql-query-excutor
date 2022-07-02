@@ -1,25 +1,23 @@
 import axios from "axios";
 
-axios.defaults.baseURL = "http://localhost:8080/api/";
-
 function getAllQueries() {
-  return axios.get("queries");
+  return axios.get("http://172.16.1.63:8080/api/queries");
 }
 
 function getOneQuery(value) {
-  return axios.get(`queries/${value}`);
+  return axios.get(`http://172.16.1.63:8080/api/queries/${value}`);
 }
 
 function createNewQuery(value) {
-  return axios.post("queries", value);
+  return axios.post("http://172.16.1.63:8080/api/queries", value);
 }
 
 function deleteOneQuery(value) {
-  return axios.delete(`queries/${value}`);
+  return axios.delete(`http://172.16.1.63:8080/api/queries/${value}`);
 }
 
 function updateOneQuery(value) {
-  return axios.put("queries", value);
+  return axios.put("http://172.16.1.63:8080/api/queries", value);
 }
 
 export {

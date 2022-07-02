@@ -1,18 +1,15 @@
 import axios from "axios";
 
-axios.defaults.baseURL = 'http://localhost:8080/api/'
+function getFormsList() {
+  return axios.get("http://172.16.1.63:8080/api/forms");
+}
 
-function getFormsList (){
-    return axios.get("forms")
-} 
+function createNewForm(value) {
+  return axios.post("http://172.16.1.63:8080/api/forms", value);
+}
 
-function createNewForm (value){
-    return axios.post("forms",value)
-} 
+function createExecuteQuery(value) {
+  return axios.post("http://172.16.1.63:8080/api/forms/execute", value);
+}
 
-function createExecuteQuery (value){
-    return axios.post("forms/execute",value)
-} 
-
-
-export {getFormsList , createNewForm , createExecuteQuery}
+export { getFormsList, createNewForm, createExecuteQuery };
