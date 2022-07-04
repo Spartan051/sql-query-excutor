@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 
 import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
 import {
@@ -7,16 +7,17 @@ import {
   GrConnect,
   GrDocumentPerformance,
 } from "react-icons/gr";
-import { FaRegBell, FaRegCalendarAlt } from "react-icons/fa";
+import { FaRegBell } from "react-icons/fa";
 import { TbMessages } from "react-icons/tb";
 import { AiOutlineSearch, AiOutlineMenu, AiOutlineClose } from "react-icons/ai";
 import { BiLogOut, BiUser } from "react-icons/bi";
-import { BsGrid, BsTranslate } from "react-icons/bs";
-import { MdOutlineNoteAlt } from "react-icons/md";
+import { BsGrid } from "react-icons/bs";
+
 import Connections from "./components/routes/connections";
 import Queries from "./components/routes/queries";
 import Forms from "./components/routes/forms";
 import Dashboard from "./components/routes/dashboard";
+import Register from "./pages/Register";
 
 function App() {
   const [show, setShow] = useState(false);
@@ -279,6 +280,7 @@ function App() {
                 <Route path="/queries" element={<Queries />} />
                 <Route path="/dashboard" element={<Dashboard />} />
                 <Route path="/forms" element={<Forms />} />
+                <Route path="/register" element={<Register />} />
               </Routes>
             </div>
           </div>
