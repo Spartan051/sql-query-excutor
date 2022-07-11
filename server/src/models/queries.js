@@ -1,8 +1,10 @@
 const sql = require("./db");
 function Queries() {}
 
-Queries.getAll = (result) => {
-  sql.query("SELECT * FROM queries", (err, response) => {
+Queries.getAll = (userId,result) => {
+  sql.query("SELECT * FROM queries WHERE user_id = ? ",
+  [userId],
+  (err, response) => {
     if (err) {
       console.log("error :", err);
       result(err, null);
@@ -13,9 +15,10 @@ Queries.getAll = (result) => {
   });
 };
 
-Queries.getOne = (newId, result) => {
+Queries.getOne = (queryId, result) => {
   sql.query(
-    `SELECT * FROM queries WHERE query_id = ${newId}`,
+    "SELECT * FROM queries WHERE id = ?",
+    [queryId],
     (err, response) => {
       if (err) {
         console.log("eror : ", err);
@@ -31,6 +34,7 @@ Queries.getOne = (newId, result) => {
 Queries.create = (newQuery, result) => {
   const dataArray = [
     newQuery.connection_name,
+    newQuery.user_id,
     newQuery.connection_name,
     newQuery.query_name,
     newQuery.query,
@@ -39,28 +43,67 @@ Queries.create = (newQuery, result) => {
   ];
 
   sql.query(
-    "INSERT INTO queries SET connection_id=(SELECT connection_id FROM connections WHERE connection_name = ?),connection_name=?,query_name=?,query=?,fields=?,show_type=?",
-    dataArray,
-    (err) => {
+    "SELECT query_name FROM queries WHERE user_id = ?",
+    [newQuery.user_id],
+    (err, response) => {
       if (err) {
-        console.log("error :", err);
+        console.log("eror : ", err);
         result(err, null);
       } else {
-        console.log("query is created");
-        result(null, "query is created");
+        const newArray = response.filter(
+          (item) => item.query_name == newQuery.query_name
+        );
+
+        if (newArray.length) {
+          result(err, {
+            message: "query name is already exist",
+          });
+        } else {
+          sql.query(
+            "INSERT INTO queries SET connection_id=(SELECT id FROM connections WHERE connection_name = ?),user_id=?,connection_name=?,query_name=?,query=?,fields=?,show_type=?",
+            dataArray,
+            (err) => {
+              if (err) {
+                console.log("error :", err);
+                result(err, null);
+              } else {
+                console.log(`query ${newQuery.query_name} is created`);
+                result(null, "query is created");
+
+                const fieldsArray = newQuery.fields.split(",")
+                fieldsArray.map((item) => {
+                  sql.query(
+                    "INSERT INTO fields SET query_id = LAST_INSERT_ID(),field=?",
+                    [item],
+                    (err) => {
+                      if (err) {
+                        console.log("error :", err);
+                        result(err, null);
+                      } else {
+                        console.log(`field ${item} is created`);
+                      }
+                    }
+                  );
+                });
+              }
+            }
+          );
+        }
       }
     }
   );
 };
 
 Queries.delete = (newId, result) => {
-  sql.query(`DELETE FROM queries WHERE query_id = ${newId}`, (err) => {
+  sql.query(`DELETE FROM queries WHERE id = ${newId}`, (err) => {
     if (err) {
       console.log("error :" + err);
       result(err);
     } else {
       console.log(`query ${newId} is deleted`);
-      result(null);
+      result(null, {
+        message: "query is deleted",
+      });
     }
   });
 };
@@ -77,15 +120,17 @@ Queries.update = (newData, result) => {
   ];
 
   sql.query(
-    "UPDATE queries SET connection_id=(SELECT connection_id FROM connections WHERE connection_name = ?),connection_name=?,query_name=?,query=?,fields=?,show_type=? WHERE query_id=?",
+    "UPDATE queries SET connection_id=(SELECT id FROM connections WHERE connection_name = ?),connection_name=?,query_name=?,query=?,fields=?,show_type=? WHERE id=?",
     dataArray,
     (err) => {
       if (err) {
         console.log("error :" + err);
         result(err);
       } else {
-        console.log(`query ${newData.query_id} is updated`);
-        result(null);
+        console.log(`query ${newData.query_id} is deleted`);
+        result(null, {
+          message: "query is deleted",
+        });
       }
     }
   );

@@ -1,12 +1,12 @@
 module.exports = (app) => {
-const router = require("express").Router();
-const connections = require("../controllers/connections")
+  const router = require("express").Router();
+  const connections = require("../controllers/connections");
 
-  router.get("/", connections.getAll );
-  router.get("/:id", connections.getOne );
-  router.post("/", connections.create );
-  router.delete("/:id", connections.delete );
-  router.put("/", connections.update );
+  router.get("/connections", connections.getAll);
+  router.get("/connection/:id", connections.getOne);
+  router.post("/connection/", connections.create);
+  router.delete("/connection/:id", connections.delete);
+  router.put("/connection/", connections.update);
 
-  app.use("/api/connections", router);
+  app.use("/api", router);
 };

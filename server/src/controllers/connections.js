@@ -1,11 +1,10 @@
 const Connections = require("../models/connections");
+const errorService = require("../services/error.service");
 
 exports.getAll = (req, res) => {
-  Connections.getAll((err, response) => {
+  Connections.getAll(req.query.id, (err, response) => {
     if (err) {
-      res.status(500).send({
-        message: err.message || "some error in get connections",
-      });
+      errorService(err , "get connections");
     } else {
       res.send({
         message: `connections has been send`,
@@ -18,9 +17,7 @@ exports.getAll = (req, res) => {
 exports.getOne = (req, res) => {
   Connections.getOne(req.params.id, (err, response) => {
     if (err) {
-      res.status(500).send({
-        message: err.message || "some error in get one connection",
-      });
+      errorService(err ,"connection", "get connection");
     } else {
       res.send({
         message: `connection has been send`,
@@ -31,39 +28,31 @@ exports.getOne = (req, res) => {
 };
 
 exports.create = (req, res) => {
-  Connections.create(req.body, (err) => {
+  Connections.create(req.body, (err, response) => {
     if (err) {
-      res.status(500).send({
-        message: err.message || "some error in create connection",
-      });
+      errorService(err,"connection", "create connection");
     } else {
-      res.send({
-        message: `connection is created`,
-      });
+      res.send(response);
     }
   });
 };
 
 exports.delete = (req, res) => {
-  Connections.delete(req.params.id, (err) => {
+  Connections.delete(req.params.id, (err, response) => {
     if (err) {
-      res.status(500).send({
-        message: err.message || "some error in delete connection",
-      });
+      errorService(err,"connection", "delete connection");
     } else {
-      res.send({ message: `connection is deleted` });
+      res.send(response);
     }
   });
 };
 
 exports.update = (req, res) => {
-  Connections.update(req.body, (err) => {
+  Connections.update(req.body, (err, response) => {
     if (err) {
-      res.status(500).send({
-        message: err.message || "some error in update connection",
-      });
+      errorService(err,"connection", "update connection");
     } else {
-      res.send({ message: `connection is updated` });
+      res.send(response);
     }
   });
 };

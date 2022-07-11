@@ -1,14 +1,12 @@
 const Queries = require("../models/queries");
 
 exports.getAll = (req, res) => {
-  Queries.getAll((err, response) => {
+  Queries.getAll(req.params.id, (err, response) => {
     if (err) {
-      res.status(500).send({
-        message: err.message || "some error in get queries",
-      });
+      errorService(err, "get queries");
     } else {
       res.send({
-        message: `queries has been send`,
+        message: "queries has been send",
         data: response,
       });
     }
@@ -18,12 +16,10 @@ exports.getAll = (req, res) => {
 exports.getOne = (req, res) => {
   Queries.getOne(req.params.id, (err, response) => {
     if (err) {
-      res.status(500).send({
-        message: err.message || "some error in get query",
-      });
+      errorService(err,"query", "get query");
     } else {
       res.send({
-        message:`query has been send`,
+        message: "query has been send",
         data: response,
       });
     }
@@ -31,37 +27,31 @@ exports.getOne = (req, res) => {
 };
 
 exports.create = (req, res) => {
-  Queries.create(req.body , (err, response) => {
+  Queries.create(req.body, (err, response) => {
     if (err) {
-      res.send({
-        message: err.message || "some error in create query",
-      });
+      errorService(err,"query", "create query");
     } else {
-      res.send({message:"query is created"});
+      res.send(response);
     }
   });
 };
 
 exports.delete = (req, res) => {
-  Queries.delete(req.params.id, (err) => {
+  Queries.delete(req.params.id, (err, response) => {
     if (err) {
-      res.status(500).send({
-        message: err.message || "some error in delete query",
-      });
+      errorService(err,"query", "delete query");
     } else {
-      res.send({message: `query is deleted` });
+      res.send(response);
     }
   });
 };
 
 exports.update = (req, res) => {
-  Queries.update(req.body, (err) => {
+  Queries.update(req.body, (err, response) => {
     if (err) {
-      res.status(500).send({
-        message: err.message || "some error in update query",
-      });
+      errorService(err,"query", "update query");
     } else {
-      res.send({ message: `query is updated` });
+      res.send(response);
     }
   });
 };

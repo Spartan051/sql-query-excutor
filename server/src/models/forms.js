@@ -15,29 +15,52 @@ Forms.getall = (result) => {
 };
 
 Forms.create = (newForms, result) => {
-  sql.query("INSERT INTO forms SET ?", newForms, (err) => {
-    if (err) {
-      console.log("error :", err);
-      result(err, null);
-    } else {
-      console.log("form is created");
-      const queryNamesArray = newForms.query_names.split(",");
+  const queryNamesArray = newForms.query_names.split(",");
+  const queryNames = [];
 
-      queryNamesArray.map((item) => {
-        sql.query(
-          `INSERT INTO side_form SET form_id = LAST_INSERT_ID(),query_id = (SELECT query_id FROM queries WHERE query_name = "${item}"),form_name =(SELECT form_name FROM forms WHERE form_id =LAST_INSERT_ID()),query_name="${item}",query=(SELECT query FROM queries WHERE query_name = "${item}"),fields=(SELECT fields FROM queries WHERE query_name = "${item}"),show_type=(SELECT show_type FROM queries WHERE query_name="${item}") `,
-          (err) => {
-            if (err) {
-              console.log("error :", err);
-              result(err, null);
-            } else {
-              console.log("side_form is created");
-            }
+  for (let item of queryNamesArray) {
+    const newItem = "'" + item + "'";
+    queryNames.push(newItem);
+  }
+
+  const strQueryNames = queryNames.toString();
+
+  sql.query(
+    `SELECT query_name , fields FROM queries WHERE query_name IN (${strQueryNames})`,
+    (err, response) => {
+      if (err) {
+        console.log("error :", err);
+      } else {
+  
+        newForms.queries = JSON.stringify(response);
+
+        sql.query("INSERT INTO forms SET ?", newForms, (err) => {
+          if (err) {
+            console.log("error :", err);
+            result(err, null);
+          } else {
+            console.log("form is created");
+            const queryNamesArray = newForms.query_names.split(",");
+
+            queryNamesArray.map((item) => {
+              sql.query(
+                `INSERT INTO side_form SET form_id = LAST_INSERT_ID(),query_id=(SELECT id FROM queries WHERE query_name = ?) `,
+                [item],
+                (err) => {
+                  if (err) {
+                    console.log("error :", err);
+                    result(err, null);
+                  } else {
+                    console.log("side_form is created");
+                  }
+                }
+              );
+            });
           }
-        );
-      });
+        });
+      }
     }
-  });
+  );
 };
 
 Forms.execute = (newData, result) => {

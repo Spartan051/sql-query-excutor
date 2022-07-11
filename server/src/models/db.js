@@ -1,5 +1,5 @@
 const mysql = require("mysql");
-const data = require("../config/dataDB");
+const data = require("../config/mainDB");
 
 const connection = mysql.createConnection({
   host: data.host,

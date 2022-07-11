@@ -2,11 +2,11 @@ module.exports = (app)=>{
 const queries = require("../controllers/queries")
 const router = require("express").Router()
 
-router.get("/", queries.getAll );
-router.get("/:id", queries.getOne );
-router.post("/", queries.create );
-router.delete("/:id", queries.delete );
-router.put("/", queries.update );
+router.get("/queries/:id", queries.getAll );
+router.get("/query/:id", queries.getOne );
+router.post("/query", queries.create );
+router.delete("/query/:id", queries.delete );
+router.put("/query", queries.update );
 
-    app.use( "/api/queries", router)
+    app.use( "/api", router)
 }
