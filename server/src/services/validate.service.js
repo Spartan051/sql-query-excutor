@@ -1,7 +1,7 @@
 const authService = require("./auth.service");
 
 const Validate = (req) => {
-  const token = req.query.token || req.body.token;
+  const token = req.headers.token;
 
   return authService().verify(token, (err) => {
     if (err) {

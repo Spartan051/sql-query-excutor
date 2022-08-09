@@ -1,4 +1,4 @@
-const errorService = (err,concept,action) => {
+const errorService = (err,res,concept,action) => {
   if (err.kind === "not_found") {
     console.log("error :" + err);
     res.status(404).send({

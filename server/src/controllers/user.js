@@ -1,12 +1,9 @@
-const Users = require("../models/users");
+const User = require("../models/user");
 
 
 exports.getOne = (req, res) => {
 
- 
-  
-
-  Users.getOne(req.body, (err, response) => {
+  User.getOne(req.body, (err, response) => {
       if (err) {
         res.send({
           message: err.message || "some error in get user info",
@@ -18,7 +15,8 @@ exports.getOne = (req, res) => {
   };
 
   exports.create = (req, res) => {
-    Users.create(req.body, (err,response) => {
+
+    User.create(req.body, (err,response) => {
       if (err) {
         res.status(500).send({
           message: err.message || "some error in create user",

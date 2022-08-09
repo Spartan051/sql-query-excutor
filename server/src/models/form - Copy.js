@@ -2,19 +2,24 @@ const sql = require("./db");
 const mysql = require("mysql");
 function Forms() {}
 
-Forms.getall = (result) => {
-  sql.query("SELECT form_name , queries FROM forms", (err, response) => {
-    if (err) {
-      console.log("error :", err);
-      result(err, null);
-    } else {
-      console.log("forms has been send");
-      result(null, response);
+Forms.getall = (req, result) => {
+  sql.query(
+    "SELECT form_name , queries FROM forms WHERE user_id = (SELECT id FROM users WHERE token = ?) ",
+    [req.headers.token],
+    (err, response) => {
+      if (err) {
+        console.log("error :", err);
+        result(err, null);
+      } else {
+        console.log("forms has been send");
+        result(null, response);
+      }
     }
-  });
+  );
 };
 
-Forms.create = (newForms, result) => {
+Forms.create = (req, result) => {
+  const newForm = req.body;
   const queryNamesArray = newForms.query_names.split(",");
   const queryNames = [];
 
@@ -31,16 +36,15 @@ Forms.create = (newForms, result) => {
       if (err) {
         console.log("error :", err);
       } else {
-  
-        newForms.queries = JSON.stringify(response);
+        newForm.queries = JSON.stringify(response);
 
-        sql.query("INSERT INTO forms SET ?", newForms, (err) => {
+        sql.query("INSERT INTO forms SET ?", newForm, (err) => {
           if (err) {
             console.log("error :", err);
             result(err, null);
           } else {
             console.log("form is created");
-            const queryNamesArray = newForms.query_names.split(",");
+            const queryNamesArray = newForm.query_names.split(",");
 
             queryNamesArray.map((item) => {
               sql.query(
@@ -63,11 +67,13 @@ Forms.create = (newForms, result) => {
   );
 };
 
-Forms.execute = (newData, result) => {
-  newData.name = "'" + newData.name + "'";
+Forms.execute = (req, result) => {
+  const excQuery = req.body;
+  excQuery.name = "'" + excQuery.name + "'";
 
   sql.query(
-    `SELECT * FROM queries WHERE query_name = ${newData.name}`,
+    "SELECT * FROM queries WHERE query_name = ? AND user_id = (SELECT id FROM users WHERE token = ?)",
+    [excQuery.name, req.headers.token],
     (err, response) => {
       if (err) {
         console.log("error :", err);
@@ -79,7 +85,7 @@ Forms.execute = (newData, result) => {
           const str = "field" + index;
 
           if (data.query.includes(str)) {
-            query = query.replace(str, newData[index - 1]);
+            query = query.replace(str, excQuery[index - 1]);
             index++;
           } else {
             index = -index;
