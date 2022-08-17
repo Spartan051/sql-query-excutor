@@ -3,6 +3,7 @@ module.exports = (app) => {
   const router = require("express").Router();
 
   router.get("/", form.getall);
+  router.get("/:id", form.getOne);
   router.post("/", form.create);
   router.post("/execute", form.execute);
 

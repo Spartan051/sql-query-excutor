@@ -11,10 +11,23 @@ exports.getall = (req, res) => {
   });
 };
 
+exports.getOne = (req, res) => {
+  Forms.getOne(req, (err, response) => {
+    if (err) {
+      errorService(err, "forms", "get form");
+    } else {
+      res.send({
+        message: "success",
+        data: response,
+      });
+    }
+  });
+};
+
 exports.create = (req, res) => {
   Forms.create(req, (err) => {
     if (err) {
-      errorService(err, "create form");
+      errorService(err, res, "form", "create form");
     } else {
       res.send({ message: "success" });
     }

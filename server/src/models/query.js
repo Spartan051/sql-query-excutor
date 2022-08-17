@@ -71,21 +71,21 @@ Query.create = (req, result) => {
                 console.log(`query ${newQuery.query_name} is created`);
                 result(null, "query is created");
 
-                const fieldsArray = newQuery.fields.split(",");
-                fieldsArray.map((item) => {
-                  sql.query(
-                    "INSERT INTO fields SET query_id = LAST_INSERT_ID(),field=?",
-                    [item],
-                    (err) => {
-                      if (err) {
-                        console.log("error :", err);
-                        result(err, null);
-                      } else {
-                        console.log(`field ${item} is created`);
-                      }
-                    }
-                  );
-                });
+                // const fieldsArray = newQuery.fields.split(",");
+                // fieldsArray.map((item) => {
+                //   sql.query(
+                //     "INSERT INTO fields SET query_id = LAST_INSERT_ID(),field=?",
+                //     [item],
+                //     (err) => {
+                //       if (err) {
+                //         console.log("error :", err);
+                //         result(err, null);
+                //       } else {
+                //         console.log(`field ${item} is created`);
+                //       }
+                //     }
+                //   );
+                // });
               }
             }
           );
